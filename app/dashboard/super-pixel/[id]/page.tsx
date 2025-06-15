@@ -121,8 +121,8 @@ export default function SuperPixelDetailPage() {
     }
   }
 
-  const deletePixel = async (pixelId: string) => {
-    if (!confirm('Tem certeza que deseja remover este pixel?')) {
+  const deletePixel = async (pixelId: string, pixelName: string) => {
+    if (!confirm(`⚠️ ATENÇÃO!\n\nTem certeza que deseja APAGAR PERMANENTEMENTE o pixel "${pixelName}"?\n\nEsta ação NÃO PODE ser desfeita!\n\nClique OK para confirmar a exclusão.`)) {
       return
     }
 
@@ -132,10 +132,43 @@ export default function SuperPixelDetailPage() {
       })
 
       if (response.ok) {
+        alert(`✅ Pixel "${pixelName}" foi removido com sucesso!`)
         fetchSuperPixel()
+      } else {
+        alert('❌ Erro ao remover pixel. Tente novamente.')
       }
     } catch (error) {
       console.error('Erro ao remover pixel:', error)
+      alert('❌ Erro ao remover pixel. Verifique sua conexão.')
+    }
+  }
+
+  const deleteSuperPixel = async () => {
+    if (!superPixel) return
+    
+    const pixelCount = superPixel.pixels.length
+    const eventCount = superPixel._count.events
+    
+    const confirmMessage = `⚠️ ATENÇÃO - EXCLUSÃO PERMANENTE!\n\nTem certeza que deseja APAGAR PERMANENTEMENTE o Super Pixel "${superPixel.name}"?\n\n📊 DADOS QUE SERÃO PERDIDOS:\n• ${pixelCount} pixel(s) configurado(s)\n• ${eventCount} evento(s) capturado(s)\n• Todas as configurações\n\n❌ Esta ação NÃO PODE ser desfeita!\n\nClique OK para confirmar a exclusão PERMANENTE.`
+    
+    if (!confirm(confirmMessage)) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/super-pixels/${superPixel.id}`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        alert(`✅ Super Pixel "${superPixel.name}" foi removido com sucesso!\n\n📊 Dados removidos:\n• ${pixelCount} pixel(s)\n• ${eventCount} evento(s)`)
+        router.push('/dashboard')
+      } else {
+        alert('❌ Erro ao remover Super Pixel. Tente novamente.')
+      }
+    } catch (error) {
+      console.error('Erro ao remover super pixel:', error)
+      alert('❌ Erro ao remover Super Pixel. Verifique sua conexão.')
     }
   }
 
@@ -196,17 +229,26 @@ ${superPixel.pixels.map(pixel => `<script>
             <ArrowLeft className="h-4 w-4 mr-2" />
             Voltar
           </Button>
-          <div>
+          <div className="flex-1">
             <h1 className="text-3xl font-bold text-gray-900">{superPixel.name}</h1>
             <p className="text-gray-600 mt-1">{superPixel.description}</p>
           </div>
-          <div className={`ml-auto px-3 py-1 rounded-full text-sm ${
+          <div className={`px-3 py-1 rounded-full text-sm ${
             superPixel.isActive 
               ? 'bg-green-100 text-green-800' 
               : 'bg-red-100 text-red-800'
           }`}>
             {superPixel.isActive ? 'Ativo' : 'Inativo'}
           </div>
+          <Button
+            variant="destructive"
+            onClick={deleteSuperPixel}
+            className="text-white bg-red-600 hover:bg-red-700"
+            title={`Apagar Super Pixel "${superPixel.name}"`}
+          >
+            <Trash2 className="h-4 w-4 mr-2" />
+            Apagar Super Pixel
+          </Button>
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
@@ -331,15 +373,19 @@ ${superPixel.pixels.map(pixel => `<script>
                         variant="outline"
                         size="sm"
                         onClick={() => togglePixelStatus(pixel.id, pixel.isActive)}
+                        className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                       >
                         {pixel.isActive ? 'Desativar' : 'Ativar'}
                       </Button>
                       <Button
-                        variant="outline"
+                        variant="destructive"
                         size="sm"
-                        onClick={() => deletePixel(pixel.id)}
+                        onClick={() => deletePixel(pixel.id, pixel.name)}
+                        className="text-white bg-red-600 hover:bg-red-700"
+                        title={`Apagar pixel "${pixel.name}"`}
                       >
-                        <Trash2 className="h-4 w-4" />
+                        <Trash2 className="h-4 w-4 mr-1" />
+                        Apagar
                       </Button>
                     </div>
                   </div>

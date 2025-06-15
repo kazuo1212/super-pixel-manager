@@ -3,8 +3,8 @@ import { prisma } from '@/lib/prisma'
 
 export async function GET(request: NextRequest) {
   try {
-    // Em um cenário real, você pegaria o userId da sessão/token
-    const userId = 'user-id-from-session' // Placeholder
+    // Usar o usuário admin que criamos
+    const userId = 'admin-user-id'
 
     const superPixels = await prisma.superPixel.findMany({
       where: { userId },
@@ -30,7 +30,8 @@ export async function GET(request: NextRequest) {
 export async function POST(request: NextRequest) {
   try {
     const { name, description } = await request.json()
-    const userId = 'user-id-from-session' // Placeholder
+    // Usar o usuário admin que criamos
+    const userId = 'admin-user-id'
 
     if (!name) {
       return NextResponse.json(

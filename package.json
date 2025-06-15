@@ -2,6 +2,9 @@
   "name": "super-pixel-manager",
   "version": "0.1.0",
   "private": true,
+  "prisma": {
+    "seed": "node prisma/seed.js"
+  },
   "scripts": {
     "dev": "next dev",
     "build": "prisma generate && next build",
@@ -10,6 +13,7 @@
     "db:push": "prisma db push",
     "db:studio": "prisma studio",
     "db:generate": "prisma generate",
+    "db:seed": "prisma db seed",
     "setup": "prisma db push && prisma generate && node scripts/setup.js",
     "reset": "prisma db push --force-reset && prisma generate && node scripts/setup.js",
     "postinstall": "prisma generate",

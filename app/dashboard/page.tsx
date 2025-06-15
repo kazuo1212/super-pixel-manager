@@ -4,8 +4,9 @@ import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { Button } from '@/components/ui/button'
-import { Plus, Activity, Eye, Settings } from 'lucide-react'
+import { Plus, Activity, Eye, Settings, Trash2 } from 'lucide-react'
 import CreateSuperPixelDialog from '@/components/CreateSuperPixelDialog'
+import EventsTerminal from '@/components/EventsTerminal'
 
 interface SuperPixel {
   id: string
@@ -43,6 +44,33 @@ export default function DashboardPage() {
       console.error('Erro ao buscar super pixels:', error)
     } finally {
       setIsLoading(false)
+    }
+  }
+
+  const deleteSuperPixel = async (superPixelId: string, superPixelName: string) => {
+    const pixelCount = superPixels.find(sp => sp.id === superPixelId)?.pixels.length || 0
+    const eventCount = superPixels.find(sp => sp.id === superPixelId)?._count.events || 0
+    
+    const confirmMessage = `⚠️ ATENÇÃO - EXCLUSÃO PERMANENTE!\n\nTem certeza que deseja APAGAR PERMANENTEMENTE o Super Pixel "${superPixelName}"?\n\n📊 DADOS QUE SERÃO PERDIDOS:\n• ${pixelCount} pixel(s) configurado(s)\n• ${eventCount} evento(s) capturado(s)\n• Todas as configurações\n\n❌ Esta ação NÃO PODE ser desfeita!\n\nClique OK para confirmar a exclusão PERMANENTE.`
+    
+    if (!confirm(confirmMessage)) {
+      return
+    }
+
+    try {
+      const response = await fetch(`/api/super-pixels/${superPixelId}`, {
+        method: 'DELETE',
+      })
+
+      if (response.ok) {
+        alert(`✅ Super Pixel "${superPixelName}" foi removido com sucesso!\n\n📊 Dados removidos:\n• ${pixelCount} pixel(s)\n• ${eventCount} evento(s)`)
+        fetchSuperPixels()
+      } else {
+        alert('❌ Erro ao remover Super Pixel. Tente novamente.')
+      }
+    } catch (error) {
+      console.error('Erro ao remover super pixel:', error)
+      alert('❌ Erro ao remover Super Pixel. Verifique sua conexão.')
     }
   }
 
@@ -110,6 +138,11 @@ export default function DashboardPage() {
           </Card>
         </div>
 
+        {/* Terminal de Eventos */}
+        <div className="mb-8">
+          <EventsTerminal />
+        </div>
+
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {superPixels.map((superPixel) => (
             <Card key={superPixel.id}>
@@ -144,6 +177,7 @@ export default function DashboardPage() {
                     variant="outline" 
                     size="sm"
                     onClick={() => router.push(`/dashboard/super-pixel/${superPixel.id}`)}
+                    className="text-blue-600 hover:text-blue-700 hover:bg-blue-50"
                   >
                     Ver Detalhes
                   </Button>
@@ -151,15 +185,18 @@ export default function DashboardPage() {
                     variant="outline" 
                     size="sm"
                     onClick={() => router.push(`/dashboard/super-pixel/${superPixel.id}`)}
+                    className="text-green-600 hover:text-green-700 hover:bg-green-50"
                   >
                     Configurar
                   </Button>
                   <Button 
-                    variant="outline" 
+                    variant="destructive" 
                     size="sm"
-                    onClick={() => router.push(`/dashboard/super-pixel/${superPixel.id}`)}
+                    onClick={() => deleteSuperPixel(superPixel.id, superPixel.name)}
+                    className="text-white bg-red-600 hover:bg-red-700"
+                    title={`Apagar Super Pixel "${superPixel.name}"`}
                   >
-                    Código
+                    <Trash2 className="h-4 w-4" />
                   </Button>
                 </div>
               </CardContent>

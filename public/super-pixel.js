@@ -3,7 +3,7 @@
 
   // Configuração do Super Pixel
   const SUPER_PIXEL_CONFIG = {
-    endpoint: 'https://seu-dominio.com/api/track',
+    endpoint: window.location.origin + '/api/track',
     superPixelId: window.SUPER_PIXEL_ID || null,
     debug: window.SUPER_PIXEL_DEBUG || false
   };
