@@ -1,19 +1,27 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 
+// Forçar renderização dinâmica para esta rota
+export const dynamic = 'force-dynamic'
+
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const limit = parseInt(searchParams.get('limit') || '50')
     const since = searchParams.get('since')
     
-    // Buscar eventos recentes com informações do Super Pixel e Pixels
-    const events = await prisma.event.findMany({
-      where: since ? {
+    let whereClause = {}
+    if (since) {
+      whereClause = {
         createdAt: {
           gt: new Date(since)
         }
-      } : undefined,
+      }
+    }
+
+    // Buscar eventos recentes com informações do Super Pixel e Pixels
+    const events = await prisma.event.findMany({
+      where: whereClause,
       include: {
         superPixel: {
           include: {
