@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Exemplo - Super Pixel Manager</title>
+    
+    <!-- Configuração do Super Pixel -->
+    <script>
+        window.SUPER_PIXEL_ID = 'seu-super-pixel-id-aqui';
+        window.SUPER_PIXEL_DEBUG = true; // Remover em produção
+    </script>
+    
+    <!-- Script do Super Pixel -->
+    <script src="/super-pixel.js" async></script>
+    
+    <!-- Pixel do Facebook (opcional, mas recomendado) -->
+    <script>
+        !function(f,b,e,v,n,t,s)
+        {if(f.fbq)return;n=f.fbq=function(){n.callMethod?
+        n.callMethod.apply(n,arguments):n.queue.push(arguments)};
+        if(!f._fbq)f._fbq=n;n.push=n;n.loaded=!0;n.version='2.0';
+        n.queue=[];t=b.createElement(e);t.async=!0;
+        t.src=v;s=b.getElementsByTagName(e)[0];
+        s.parentNode.insertBefore(t,s)}(window, document,'script',
+        'https://connect.facebook.net/en_US/fbevents.js');
+        
+        fbq('init', 'SEU_PIXEL_ID_DO_FACEBOOK');
+        fbq('track', 'PageView');
+    </script>
+    
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        .container {
+            background: #f8f9fa;
+            padding: 30px;
+            border-radius: 10px;
+            margin: 20px 0;
+        }
+        .product {
+            border: 1px solid #ddd;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            background: white;
+        }
+        .price {
+            font-size: 24px;
+            font-weight: bold;
+            color: #28a745;
+            margin: 10px 0;
+        }
+        button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #0056b3;
+        }
+        .btn-secondary {
+            background: #6c757d;
+        }
+        .btn-secondary:hover {
+            background: #545b62;
+        }
+        .btn-success {
+            background: #28a745;
+        }
+        .btn-success:hover {
+            background: #1e7e34;
+        }
+        input, textarea {
+            width: 100%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+        .form-group {
+            margin: 15px 0;
+        }
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        .debug-info {
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+            font-family: monospace;
+            font-size: 12px;
+        }
+    </style>
+</head>
+<body>
+    <h1>Página de Exemplo - Super Pixel Manager</h1>
+    
+    <div class="container">
+        <h2>🎯 Teste do Super Pixel</h2>
+        <p>Esta página demonstra como o Super Pixel captura dados automaticamente.</p>
+        <p><strong>Abra o console do navegador</strong> para ver os eventos sendo enviados em tempo real.</p>
+    </div>
+
+    <div class="product" data-product-name="Curso de Marketing Digital">
+        <h3 class="product-name">Curso de Marketing Digital</h3>
+        <p>Aprenda as melhores estratégias de marketing digital e otimize suas campanhas do Facebook.</p>
+        <div class="price" data-price="297.00">R$ 297,00</div>
+        
+        <button onclick="addToCart()">Adicionar ao Carrinho</button>
+        <button onclick="buyNow()" class="btn-success">Comprar Agora</button>
+        <button onclick="viewDetails()" class="btn-secondary">Ver Detalhes</button>
+    </div>
+
+    <div class="container">
+        <h3>📝 Formulário de Contato</h3>
+        <form id="contactForm" onsubmit="submitForm(event)">
+            <div class="form-group">
+                <label for="name">Nome:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="email">Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="phone">Telefone:</label>
+                <input type="tel" id="phone" name="phone">
+            </div>
+            
+            <div class="form-group">
+                <label for="message">Mensagem:</label>
+                <textarea id="message" name="message" rows="4"></textarea>
+            </div>
+            
+            <button type="submit">Enviar Mensagem</button>
+        </form>
+    </div>
+
+    <div class="container">
+        <h3>🔗 Links de Teste</h3>
+        <p>Clique nos links abaixo para testar o rastreamento de cliques:</p>
+        <a href="#produto1" onclick="trackLinkClick('produto1')">Ver Produto 1</a> |
+        <a href="#produto2" onclick="trackLinkClick('produto2')">Ver Produto 2</a> |
+        <a href="#contato" onclick="trackLinkClick('contato')">Contato</a> |
+        <a href="https://facebook.com" target="_blank">Facebook</a>
+    </div>
+
+    <div class="debug-info">
+        <h4>🐛 Informações de Debug</h4>
+        <p><strong>Super Pixel ID:</strong> <span id="pixelId">-</span></p>
+        <p><strong>Session ID:</strong> <span id="sessionId">-</span></p>
+        <p><strong>User ID:</strong> <span id="userId">-</span></p>
+        <p><strong>Eventos Enviados:</strong> <span id="eventCount">0</span></p>
+        <button onclick="showCollectedData()">Mostrar Dados Coletados</button>
+        <button onclick="sendCustomEvent()">Enviar Evento Personalizado</button>
+    </div>
+
+    <div style="height: 200vh; background: linear-gradient(to bottom, #f8f9fa, #e9ecef);">
+        <div style="padding: 50px; text-align: center;">
+            <h3>📊 Área de Scroll</h3>
+            <p>Role a página para testar o rastreamento de profundidade de scroll.</p>
+            <p>O Super Pixel enviará eventos quando você atingir 25%, 50% e 75% da página.</p>
+        </div>
+    </div>
+
+    <script>
+        let eventCount = 0;
+
+        // Aguardar o Super Pixel carregar
+        window.addEventListener('load', function() {
+            setTimeout(() => {
+                if (window.SuperPixel) {
+                    document.getElementById('pixelId').textContent = window.SuperPixel.config.superPixelId || 'Não configurado';
+                    
+                    const data = window.SuperPixel.getData();
+                    document.getElementById('sessionId').textContent = data.sessionId || '-';
+                    document.getElementById('userId').textContent = data.userId || '-';
+                }
+            }, 1000);
+        });
+
+        function addToCart() {
+            eventCount++;
+            document.getElementById('eventCount').textContent = eventCount;
+            
+            if (window.SuperPixel) {
+                window.SuperPixel.track('add_to_cart', {
+                    product_name: 'Curso de Marketing Digital',
+                    value: 297.00,
+                    currency: 'BRL',
+                    category: 'Educação'
+                });
+            }
+            
+            alert('Produto adicionado ao carrinho! (Evento enviado)');
+        }
+
+        function buyNow() {
+            eventCount++;
+            document.getElementById('eventCount').textContent = eventCount;
+            
+            if (window.SuperPixel) {
+                window.SuperPixel.track('purchase', {
+                    product_name: 'Curso de Marketing Digital',
+                    value: 297.00,
+                    currency: 'BRL',
+                    transaction_id: 'TXN_' + Date.now()
+                });
+            }
+            
+            alert('Compra realizada! (Evento enviado)');
+        }
+
+        function viewDetails() {
+            eventCount++;
+            document.getElementById('eventCount').textContent = eventCount;
+            
+            if (window.SuperPixel) {
+                window.SuperPixel.track('view_content', {
+                    content_name: 'Curso de Marketing Digital',
+                    content_type: 'product'
+                });
+            }
+            
+            alert('Visualizando detalhes! (Evento enviado)');
+        }
+
+        function submitForm(event) {
+            event.preventDefault();
+            eventCount++;
+            document.getElementById('eventCount').textContent = eventCount;
+            
+            if (window.SuperPixel) {
+                window.SuperPixel.track('lead', {
+                    form_name: 'Formulário de Contato',
+                    lead_type: 'contact'
+                });
+            }
+            
+            alert('Formulário enviado! (Evento enviado)');
+        }
+
+        function trackLinkClick(linkName) {
+            eventCount++;
+            document.getElementById('eventCount').textContent = eventCount;
+            
+            if (window.SuperPixel) {
+                window.SuperPixel.track('link_click', {
+                    link_name: linkName,
+                    link_type: 'internal'
+                });
+            }
+        }
+
+        function showCollectedData() {
+            if (window.SuperPixel) {
+                const data = window.SuperPixel.getData();
+                console.log('📊 Dados coletados pelo Super Pixel:', data);
+                alert('Dados coletados exibidos no console! Abra o console do navegador (F12).');
+            } else {
+                alert('Super Pixel não carregado ainda. Aguarde alguns segundos.');
+            }
+        }
+
+        function sendCustomEvent() {
+            eventCount++;
+            document.getElementById('eventCount').textContent = eventCount;
+            
+            if (window.SuperPixel) {
+                window.SuperPixel.track('custom_test_event', {
+                    test_parameter: 'valor_teste',
+                    timestamp: new Date().toISOString(),
+                    page_section: 'debug_area'
+                });
+            }
+            
+            alert('Evento personalizado enviado!');
+        }
+
+        // Rastrear tempo na página
+        setInterval(() => {
+            const timeOnPage = Date.now() - window.spStartTime;
+            if (timeOnPage > 0 && timeOnPage % 10000 === 0) { // A cada 10 segundos
+                console.log(`⏱️ Tempo na página: ${Math.floor(timeOnPage / 1000)} segundos`);
+            }
+        }, 1000);
+    </script>
+</body>
+</html> 
