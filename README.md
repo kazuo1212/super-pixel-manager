@@ -24,32 +24,45 @@ Um sistema completo para gerenciar pixels do Facebook de forma inteligente, capt
 
 ## 🛠️ Instalação
 
+### Pré-requisitos
+- Node.js 18+
+- Conta no [Supabase](https://supabase.com) (gratuita)
+
+### Instalação Rápida
+
 1. **Clone o repositório**
 ```bash
 git clone <url-do-repositorio>
 cd super-pixel-manager
-```
-
-2. **Instale as dependências**
-```bash
 npm install
 ```
 
-3. **Configure o banco de dados**
+2. **Configure o Supabase**
+   - Acesse [supabase.com](https://supabase.com)
+   - Crie novo projeto: `super-pixel-manager`
+   - Vá em Settings → Database
+   - Copie a Connection String (URI)
+
+3. **Configure variáveis de ambiente**
 ```bash
-npx prisma db push
-npx prisma generate
+# Crie o arquivo .env
+touch .env
+
+# Adicione no .env:
+DATABASE_URL="postgresql://postgres:SUA_SENHA@db.xxx.supabase.co:5432/postgres"
+NEXTAUTH_SECRET="uma_chave_secreta_muito_forte"
+NEXTAUTH_URL="http://localhost:3000"
 ```
 
-4. **Inicie o servidor de desenvolvimento**
+4. **Configure o banco e inicie**
 ```bash
+npm run setup
 npm run dev
 ```
 
-5. **Acesse a aplicação**
-```
-http://localhost:3000
-```
+5. **Acesse:** http://localhost:3000
+
+📖 **Guia detalhado**: Veja `SUPABASE-SETUP.md` para instruções completas
 
 ## 📋 Como Usar
 
