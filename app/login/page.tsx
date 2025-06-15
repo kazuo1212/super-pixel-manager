@@ -7,17 +7,19 @@ import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 
 export default function LoginPage() {
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
+  const [email, setEmail] = useState('admin@superpixel.com')
+  const [password, setPassword] = useState('admin123')
   const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState('')
   const router = useRouter()
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsLoading(true)
+    setError('')
 
     try {
-      const response = await fetch('/api/auth/login', {
+      const response = await fetch('/api/public-login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -25,13 +27,18 @@ export default function LoginPage() {
         body: JSON.stringify({ email, password }),
       })
 
-      if (response.ok) {
+      const data = await response.json()
+
+      if (response.ok && data.success) {
+        // Salvar dados do usuário no localStorage
+        localStorage.setItem('user', JSON.stringify(data.user))
         router.push('/dashboard')
       } else {
-        alert('Credenciais inválidas')
+        setError(data.error || 'Erro ao fazer login')
       }
     } catch (error) {
-      alert('Erro ao fazer login')
+      setError('Erro de conexão. Tente novamente.')
+      console.error('Erro no login:', error)
     } finally {
       setIsLoading(false)
     }
@@ -48,6 +55,11 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleLogin} className="space-y-4">
+            {error && (
+              <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+                {error}
+              </div>
+            )}
             <div className="space-y-2">
               <label htmlFor="email" className="text-sm font-medium">
                 Email
@@ -55,7 +67,7 @@ export default function LoginPage() {
               <Input
                 id="email"
                 type="email"
-                placeholder="seu@email.com"
+                placeholder="admin@superpixel.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 required
@@ -68,7 +80,7 @@ export default function LoginPage() {
               <Input
                 id="password"
                 type="password"
-                placeholder="••••••••"
+                placeholder="admin123"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
@@ -79,15 +91,11 @@ export default function LoginPage() {
             </Button>
           </form>
           <div className="mt-4 text-center">
-            <p className="text-sm text-gray-600">
-              Não tem uma conta?{' '}
-              <button
-                onClick={() => router.push('/register')}
-                className="text-primary hover:underline"
-              >
-                Cadastre-se
-              </button>
-            </p>
+            <div className="text-sm text-gray-600 bg-blue-50 p-3 rounded">
+              <strong>Credenciais padrão:</strong><br/>
+              Email: admin@superpixel.com<br/>
+              Senha: admin123
+            </div>
           </div>
         </CardContent>
       </Card>
